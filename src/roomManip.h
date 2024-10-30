@@ -13,7 +13,7 @@ struct ROOM {
 };
 
 typedef struct {
-	ROOM **array;
+	ROOM *array;
 	int maxSize;
 	int size;
 }ROOM_LIST;
@@ -36,6 +36,16 @@ ROOM_LIST roomListCreate();
 #ifndef ROOM_MANIP_LIST_APPEND
 #define ROOM_MANIP_LIST_APPEND
 void roomListAppendRoom(ROOM_LIST *list, ROOM *room);
+#endif
+
+#ifndef ROOM_MANIP_LIST_DELETE
+#define ROOM_MANIP_LIST_DELETE
+void roomListDelete(ROOM_LIST *list, int i);
+#endif
+
+#ifndef ROOM_MANIP_LIST_INCLUDES
+#define ROOM_MANIP_LIST_INCLUDES
+int roomListIncludesCode(ROOM_LIST *list, const char *roomCode);
 #endif
 
 #ifndef ROOM_MANIP_LIST_GET

@@ -11,7 +11,7 @@
 #define ROOM_ARRAY_SIZE 4
 
 /*
- * takes a ROOM pointer and creates a copy
+ * takes a ROOM pointer and creates a shallow copy
 **/
 ROOM *roomCreate(ROOM *room) {
 	ROOM *newRoom = malloc(sizeof(ROOM));
@@ -25,13 +25,17 @@ ROOM *roomCreate(ROOM *room) {
 	return newRoom;
 }
 
+/*
+ * creates and returns an empty array list of ROOMs
+**/
 ROOM_LIST roomListCreate() {
-	ROOM_LIST list = { malloc(sizeof(ROOM *)), ROOM_ARRAY_SIZE, 0 };
-	*list.array = malloc(sizeof(ROOM) * ROOM_ARRAY_SIZE);
+	ROOM_LIST list = { malloc(sizeof(ROOM) * ROOM_ARRAY_SIZE), ROOM_ARRAY_SIZE, 0 };
 	return list;
 }
 
-
+/*
+ * takes a ROOM pointer and creates a shallow copy
+**/
 void roomListAppendRoom(ROOM_LIST *list, ROOM *room) {
 	list->size++;
 	
@@ -40,20 +44,21 @@ void roomListAppendRoom(ROOM_LIST *list, ROOM *room) {
 		// double the size of the array
 		list->maxSize *= 2;
 		// and safely reallocate its space
-		ROOM *newArray = realloc(*list->array, list->maxSize*sizeof(ROOM));
+		ROOM *newArray = realloc(list->array, list->maxSize*sizeof(ROOM));
 		if (!newArray) {
-			free(*list->array);
+			free(list->array);
 			printf("could not allocate memory somehow");
 			exit(1);
 			return;
 		}
-		*list->array = newArray;
+		list->array = newArray;
 	}
 
-	if (room != NULL)
-		*(list->array + list->size - 1) = room;
-	else {
-		ROOM *newRoom = *(list->array) + list->size - 1;
+	// add a new empty room if no template room is passed
+	if (room != NULL) {
+		*(list->array + list->size - 1) = *roomCreate(room);
+	} else {
+		ROOM *newRoom = list->array + list->size - 1;
 		newRoom->roomCode = "";
 		newRoom->name = "";
 		newRoom->description = "";
@@ -64,10 +69,47 @@ void roomListAppendRoom(ROOM_LIST *list, ROOM *room) {
 	}
 }
 
-ROOM *roomListGetElement(ROOM_LIST *list, int i) {
-	return *(list->array) + i;
+/*
+ * sifts a room to the end of the array and decrements the size
+ * (effectively deleting it)
+**/
+void roomListDelete(ROOM_LIST *list, int i) {
+	if (i < 0 || i >= list->size) {
+		printf("index %i out of range in list with %i elements.\n", i, list->size);
+		return;
+	}
+
+	// this could be faster with a circular array or by using a set instead of a list,
+	// but i really dont mind this temporarily
+	for (int j = i + 1; j < list->size; j++) {
+		ROOM temp = *(list->array + j);
+		*(list->array + j) = *(list->array + j - 1);
+		*(list->array + j - 1) = temp;
+	}
+
+	list->size--;
 }
 
+/*
+ * takes a ROOM pointer and checks if it matches a specific room code (unused)
+**/
+int roomListIncludesCode(ROOM_LIST *list, const char *roomCode) {
+	for (int i = 0; i < list->size; i++)
+		if (strcmp((list->array + i)->roomCode, roomCode) == 0)
+			return 1;
+	return 0;
+}
+
+/*
+ * returns the element at index i, useful for if I want to change how addressing works later
+**/
+ROOM *roomListGetElement(ROOM_LIST *list, int i) {
+	return list->array + i;
+}
+
+/*
+ * creates an array of rooms from `filepath`, and returns it. also stores the array size in the passed pointer.
+**/
 ROOM *readRoomFile(const char *filepath, int *arraySize) {
 	// forward declare a bunch of variables
 	FILE *roomFile;
@@ -122,11 +164,10 @@ ROOM *readRoomFile(const char *filepath, int *arraySize) {
 
 		// select only the content after the prefix (description/name/code specifier) and trim whitespace
 		lineData = str_trim(lineBuffer + strlen(prefix));
-		printf("%i %s|---|%s\n", roomList.size, prefix, lineBuffer);
+		
 		// now, do that weird thing.
 		*currentField = malloc( sizeof(char) * ( strlen(lineData) + 1 ) );
 		strcpy(*currentField, lineData);
-		printf("%s|---|%s\n", prefix, *currentField);
 		// this allocates exactly as much memory as is needed to hold all the strings, and doesnt set limits
 		// on the length of names, codes, or descriptions. whether or not this is good is in the eye of the
 		// beholder, but I think it is (it was also my first thought before you statically allocated space
@@ -134,5 +175,5 @@ ROOM *readRoomFile(const char *filepath, int *arraySize) {
 	}
 
 	*arraySize = roomList.size;
-	return *(roomList.array);
+	return roomList.array;
 }
