@@ -1,4 +1,5 @@
 #include "roomManip.h"
+#include "list.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,14 +17,16 @@ void printRoom(ROOM *room) {
  * creates a 1d dungeon by extending a linked list using the rooms in roomArray,
  * and returns a pointer to the first room of the dungeon.
 **/
-ROOM *createDungeon(ROOM *roomArray, int roomArraySize, int dungeonSize) {
+ROOM *createDungeon(LIST *roomList, int dungeonSize) {
 	// create the first room if any rooms should be created
-	ROOM *dungeon = dungeonSize <= 0 ? NULL : roomCreate(roomArray + rand() % roomArraySize);
+	ROOM *dungeon = NULL;
+	if (dungeonSize > 0)
+		dungeon = roomCreate(listGetElement(roomList, rand() % roomList->size));
 	ROOM *currentRoom = dungeon;
-	
+
 	// make the rest of the rooms
 	for (int i = 1; i < dungeonSize; i++) {
-		currentRoom->east = roomCreate(roomArray + rand() % roomArraySize);
+		currentRoom->east = roomCreate(listGetElement(roomList, rand() % roomList->size));
 		currentRoom->east->west = currentRoom;
 		currentRoom = currentRoom->east;
 	}
@@ -44,15 +47,7 @@ void printDungeon(ROOM *dungeon) {
  * as a result, this function is really simple since the pointers in each struct are all duplicates
 **/
 void deleteDungeon(ROOM *dungeon) {
-	for (ROOM *next = dungeon; next->east != NULL; next = next->east) {
-		free(next->west);
-
-		// if its the last room, free next and exit
-		if (next->east == NULL) {
-			free(next);
-			break;
-		}
-	}
+	// LIST frontier = listCreate();
 }
 
 // I started writing this function (and refactoring like half the code) about 4 hours ago before realizing
@@ -86,9 +81,8 @@ void deleteDungeon(ROOM *dungeon) {
 // }
 
 int main(int argc, char *argv[]) {
-	int roomCount = 0;
 	char lineBuffer[LINE_BUFFER_SIZE];
-	ROOM *roomArray;
+	LIST roomList;
 	ROOM *dungeon;
 
 	// seed rng
@@ -100,8 +94,11 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	roomArray = readRoomFile(argv[1], &roomCount);
-	if (roomArray == NULL) return 1;
+	roomList = readRoomFile(argv[1]);
+	if (roomList.size == 0) {
+		printf("No rooms loaded!\nexiting...");
+		return 1;
+	}
 
 	// as proof all the rooms are saved, yell about it
 	// printf("Saved %i rooms\n", roomCount);
@@ -115,26 +112,22 @@ int main(int argc, char *argv[]) {
 
 	printf("creating dungeon with %i rooms...\n", atoi(lineBuffer));
 
-	dungeon = createDungeon(roomArray, roomCount, atoi(lineBuffer));
+	dungeon = createDungeon(&roomList, atoi(lineBuffer));
 
 	printDungeon(dungeon);
 
 	deleteDungeon(dungeon);
 
 	// now be a "good" programmer and dont leak your memory
-	for (int i = 0; i < roomCount; i++) {
-		// also I know this is a horrible idea 99/100 times but I wanted to try void pointers for this.
-		// if I'm using c I might as well have fun with it :P (this is why good was in quotes)
-		void **field = (void **)(roomArray+i);
-
-		// since every field is a pointer, I can just iterate through each field bc theyre all the size
-		// of a pointer (until the end of the struct)
-		while (field < (void **)(roomArray + i + 1))
-			free(*field++); // and free each memory pointer in that struct
+	while (roomList.size > 0) {
+		ROOM *currentRoom = listPop(&roomList, roomList.size-1);
+		free(currentRoom->roomCode);
+		free(currentRoom->description);
+		free(currentRoom->name);
+		free(currentRoom);
 	}
 
-	// finally free the array
-	free(roomArray);
+	listFree(&roomList);
 
 	return 0;
 }

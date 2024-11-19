@@ -1,6 +1,6 @@
-build/dungeonmaster: build/intermediate/main.o build/intermediate/stringManip.o build/intermediate/roomManip.o
+build/dungeonmaster: build/intermediate/main.o build/intermediate/stringManip.o build/intermediate/roomManip.o build/intermediate/list.o
 	mkdir -p build
-	gcc build/intermediate/main.o build/intermediate/stringManip.o build/intermediate/roomManip.o -g -o build/dungeonmaster -Wall
+	gcc build/intermediate/main.o build/intermediate/stringManip.o build/intermediate/roomManip.o build/intermediate/list.o -g -o build/dungeonmaster -Wall
 
 build/intermediate/stringManip.o: src/stringManip.h src/stringManip.c
 	mkdir -p build/intermediate
@@ -10,7 +10,11 @@ build/intermediate/roomManip.o: src/roomManip.h src/roomManip.c
 	mkdir -p build/intermediate
 	gcc src/roomManip.c -c -g -o build/intermediate/roomManip.o -Wall
 
-build/intermediate/main.o: src/main.c src/stringManip.h
+build/intermediate/list.o: src/list.h src/list.c
+	mkdir -p build/intermediate
+	gcc src/list.c -c -g -o build/intermediate/list.o -Wall
+
+build/intermediate/main.o: src/main.c
 	mkdir -p build/intermediate
 	gcc src/main.c -c -g -o build/intermediate/main.o -Wall
 
