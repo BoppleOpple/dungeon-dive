@@ -51,6 +51,7 @@ void roomListAppendRoom(ROOM_LIST *list, ROOM *room) {
 			exit(1);
 			return;
 		}
+		
 		list->array = newArray;
 	}
 
@@ -113,6 +114,7 @@ ROOM *roomListGetElement(ROOM_LIST *list, int i) {
 ROOM *readRoomFile(const char *filepath, int *arraySize) {
 	// forward declare a bunch of variables
 	FILE *roomFile;
+	ROOM *returnedArray = NULL;
 	ROOM_LIST roomList = roomListCreate(); // allocate enough space for the current maximum number of rooms
 	/*
 	currentField points to a pointer, so this allocates the space needed for the line data to the
@@ -134,7 +136,7 @@ ROOM *readRoomFile(const char *filepath, int *arraySize) {
 	char **currentField;
 	
 	char lineBuffer[1024]; // allocate some space for reading lines from roomFile
-	char *lineData = lineBuffer; // this will contain only the "important" parts of the line (so not the prefix)
+	char *lineData = NULL; // this will contain only the "important" parts of the line (so not the prefix)
 	char *prefix; // when reading lines, this is the c string determining which field the text falls into
 
 	// try to read the passed filepath
@@ -172,8 +174,14 @@ ROOM *readRoomFile(const char *filepath, int *arraySize) {
 		// on the length of names, codes, or descriptions. whether or not this is good is in the eye of the
 		// beholder, but I think it is (it was also my first thought before you statically allocated space
 		// in class) :P
+
+		free(lineData);
+		lineData = NULL;
 	}
 
 	*arraySize = roomList.size;
-	return roomList.array;
+	returnedArray = malloc(sizeof(ROOM) * roomList.size);
+	memcpy(returnedArray, roomList.array, sizeof(ROOM) * roomList.size);
+
+	return returnedArray;
 }
