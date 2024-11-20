@@ -10,6 +10,8 @@ int main(int argc, char *argv[]) {
 	char lineBuffer[LINE_BUFFER_SIZE];
 	LIST roomList;
 	ROOM *dungeon = NULL;
+	int dungeonWidth = 0;
+	int dungeonHeight = 0;
 
 	// seed rng
 	srand(time(0));
@@ -32,15 +34,19 @@ int main(int argc, char *argv[]) {
 	// 	printf("Room %s: %s\n\n", (roomArray+i)->roomCode, (roomArray+i)->name);
 	// }
 
-	printf("enter the number of rooms:\n");
-
+	printf("enter the dungeon width:\n");
 	fgets(lineBuffer, LINE_BUFFER_SIZE, stdin);
+	dungeonWidth = atoi(lineBuffer);
 
-	printf("creating dungeon with %i rooms...\n", atoi(lineBuffer));
+	printf("enter the dungeon height:\n");
+	fgets(lineBuffer, LINE_BUFFER_SIZE, stdin);
+	dungeonHeight = atoi(lineBuffer);
 
-	dungeon = createDungeon(&roomList, atoi(lineBuffer));
+	printf("creating %ix%i dungeon...\n", dungeonWidth, dungeonHeight);
 
-	// printDungeon(dungeon);
+	dungeon = createDungeon(&roomList, &dungeonWidth, &dungeonHeight);
+
+	printDungeon(dungeon, &dungeonWidth, &dungeonHeight);
 
 	deleteDungeon(dungeon);
 

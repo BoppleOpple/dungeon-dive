@@ -7,7 +7,7 @@
  * creates a 1d dungeon by extending a linked list using the rooms in roomArray,
  * and returns a pointer to the first room of the dungeon.
 **/
-ROOM *createDungeon(LIST *roomList, int dungeonSize);
+ROOM *createDungeon(LIST *roomList, int *width, int *height);
 #endif
 
 #ifndef DUNGEON_DFT
@@ -20,7 +20,7 @@ void dungeonDFT(ROOM *dungeon, void (*fn)(ROOM*));
 /*
  * iterates through and prints the contents of each room in the dungeon
 **/
-void printDungeon(ROOM *dungeon);
+void printDungeon(ROOM *dungeonCorner, int *width, int *height);
 #endif
 
 #ifndef DUNGEON_DELETE

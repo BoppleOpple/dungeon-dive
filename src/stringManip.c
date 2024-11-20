@@ -1,6 +1,5 @@
 #include "stringManip.h"
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -9,7 +8,6 @@ char *str_cut(char *str, int start, int end) {
 	// including the end + 1 for termination)
 	char *cut = malloc(sizeof(char) * (end - start + 2));
 
-	printf("%i\n", end - start+2);
 	memcpy(cut, str + start, sizeof(char) * (end - start + 1));
 	*(cut + end - start + 1) = 0;
 
