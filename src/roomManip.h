@@ -1,5 +1,7 @@
 #include "list.h"
 
+#ifndef ROOM_STRUCT
+#define ROOM_STRUCT
 typedef struct ROOM ROOM;
 
 // let Room be a structure of dynamically allocated strings
@@ -13,6 +15,7 @@ struct ROOM {
 	ROOM *east;
 	ROOM *west;
 };
+#endif
 
 #ifndef ROOM_MANIP_CREATE
 #define ROOM_MANIP_CREATE
