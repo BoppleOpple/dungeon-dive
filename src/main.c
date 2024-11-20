@@ -47,38 +47,34 @@ void printDungeon(ROOM *dungeon) {
  * as a result, this function is really simple since the pointers in each struct are all duplicates
 **/
 void deleteDungeon(ROOM *dungeon) {
-	// LIST frontier = listCreate();
+	LIST frontier = listCreate();
+	LIST visited = listCreate();
+	ROOM *currentRoom;
+	ROOM *neighbors[4] = {NULL, NULL, NULL, NULL};
+
+	listAppendItem(&frontier, dungeon);
+
+	while (frontier.size > 0) {
+		currentRoom = listPop(&frontier, frontier.size-1);
+		listAppendItem(&visited, currentRoom);
+
+		neighbors[0] = currentRoom->north;
+		neighbors[1] = currentRoom->south;
+		neighbors[2] = currentRoom->east;
+		neighbors[3] = currentRoom->west;
+
+		for (int i = 0; i < 4; i++) {
+			if (*(neighbors + i) != NULL && !listIncludesItem(&visited, *(neighbors + i)))
+				listAppendItem(&frontier, *(neighbors + i));
+		}
+
+		printRoom(currentRoom);
+		free(currentRoom);
+	}
+	
+	listFree(&frontier);
+	listFree(&visited);
 }
-
-// I started writing this function (and refactoring like half the code) about 4 hours ago before realizing
-// that you only wanted a 1d list
-// void printDungeon(ROOM *dungeon) {
-// 	ROOM_LIST printed = roomListCreate();
-// 	ROOM_LIST frontier = roomListCreate();
-
-// 	roomListAppendRoom(&frontier, dungeon);
-
-// 	while (frontier.size > 0) {
-// 		printRoom(frontier.array);
-
-// 		if (frontier.array->north)
-// 			if (!roomListIncludesCode(&printed, frontier.array->north->roomCode))
-// 				roomListAppendRoom(&frontier, frontier.array->north);
-// 		if (frontier.array->south)
-// 			if (!roomListIncludesCode(&printed, frontier.array->south->roomCode))
-// 				roomListAppendRoom(&frontier, frontier.array->south);
-// 		if (frontier.array->east)
-// 			if (!roomListIncludesCode(&printed, frontier.array->east->roomCode))
-// 				roomListAppendRoom(&frontier, frontier.array->east);
-// 		if (frontier.array->west)
-// 			if (!roomListIncludesCode(&printed, frontier.array->west->roomCode))
-// 				roomListAppendRoom(&frontier, frontier.array->west);
-		
-// 		roomListAppendRoom(&printed, frontier.array);
-		
-// 		roomListDelete(&frontier, 0); // really bad delete function for now
-// 	}
-// }
 
 int main(int argc, char *argv[]) {
 	char lineBuffer[LINE_BUFFER_SIZE];
@@ -114,7 +110,7 @@ int main(int argc, char *argv[]) {
 
 	dungeon = createDungeon(&roomList, atoi(lineBuffer));
 
-	printDungeon(dungeon);
+	// printDungeon(dungeon);
 
 	deleteDungeon(dungeon);
 
