@@ -34,9 +34,6 @@ ROOM *roomCreate(ROOM *room) {
 	return newRoom;
 }
 
-/*
- * creates an array of rooms from `filepath`, and returns it. also stores the array size in the passed pointer.
-**/
 LIST readRoomFile(const char *filepath) {
 	// forward declare a bunch of variables
 	FILE *roomFile = NULL;

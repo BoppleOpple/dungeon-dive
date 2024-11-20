@@ -4,10 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * takes a c string, start index, and end index, and returns a *copy* of the
- * substring from start to end, inclusive
-**/
 char *str_cut(char *str, int start, int end) {
 	// allocate a new string of size end - start + 2 (length of the string + 1 for
 	// including the end + 1 for termination)
@@ -20,9 +16,6 @@ char *str_cut(char *str, int start, int end) {
 	return cut;
 }
 
-/*
- * trims whitespace from a c string and returns a new string
-**/
 char *str_trim(char *str){
 	int start = 0;
 	int end = strlen(str) - 1;

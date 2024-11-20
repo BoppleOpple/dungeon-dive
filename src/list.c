@@ -2,17 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*
- * creates and returns an empty array list of pointers
-**/
 LIST listCreate() {
 	LIST list = { malloc(sizeof(void*) * DEFAULT_LIST_SIZE), DEFAULT_LIST_SIZE, 0 };
 	return list;
 }
 
-/*
- * takes a void pointer and adds it to the list by reference
-**/
 void listAppendItem(LIST *list, void *item) {
 	list->size++;
 	
@@ -36,9 +30,6 @@ void listAppendItem(LIST *list, void *item) {
 	*(list->array + list->size - 1) = item;
 }
 
-/*
- * sifts a room to the end of the array and decrements the size, then returns the item
-**/
 void *listPop(LIST *list, int i) {
 	if (i < 0 || i >= list->size) {
 		printf("index %i out of range in list with %i elements.\n", i, list->size);
@@ -59,9 +50,6 @@ void *listPop(LIST *list, int i) {
 	return item;
 }
 
-/*
- * takes a LIST pointer and checks if it contains another pointer (unused)
-**/
 int listIncludesItem(LIST *list, const void *room) {
 	for (int i = 0; i < list->size; i++)
 		if (*(list->array + i) == room)
@@ -69,14 +57,11 @@ int listIncludesItem(LIST *list, const void *room) {
 	return 0;
 }
 
-/*
- * returns the element at index i, useful for if I want to change how addressing works later
-**/
 void *listGetElement(LIST *list, int i) {
 	return *(list->array + i);
 }
 
-void listFree(LIST *list) {
+void listClear(LIST *list) {
 	free(list->array);
 	list->array = NULL;
 	list->maxSize = 0;
