@@ -34,19 +34,7 @@ ROOM *createDungeon(LIST *roomList, int dungeonSize) {
 	return dungeon;
 }
 
-/*
- * iterates through and prints the contents of each room in the dungeon
-**/
-void printDungeon(ROOM *dungeon) {
-	for (ROOM *next = dungeon; next != NULL; next = next->east)
-		printRoom(next);
-}
-
-/*
- * frees each room of a dungeon, which assumes the content of each room will be freed in the roomArray.
- * as a result, this function is really simple since the pointers in each struct are all duplicates
-**/
-void deleteDungeon(ROOM *dungeon) {
+void dungeonDFT(ROOM *dungeon, void (*fn)(void*)) {
 	LIST frontier = listCreate();
 	LIST visited = listCreate();
 	ROOM *currentRoom;
@@ -69,11 +57,30 @@ void deleteDungeon(ROOM *dungeon) {
 		}
 
 		printRoom(currentRoom);
-		free(currentRoom);
+		fn(currentRoom);
 	}
 	
 	listFree(&frontier);
 	listFree(&visited);
+}
+
+void printAsRoom(void *room) {
+	printRoom((ROOM*) room);
+}
+
+/*
+ * iterates through and prints the contents of each room in the dungeon
+**/
+void printDungeon(ROOM *dungeon) {
+	dungeonDFT(dungeon, &printAsRoom);
+}
+
+/*
+ * frees each room of a dungeon, which assumes the content of each room will be freed in the roomArray.
+ * as a result, this function is really simple since the pointers in each struct are all duplicates
+**/
+void deleteDungeon(ROOM *dungeon) {
+	dungeonDFT(dungeon, &free);
 }
 
 int main(int argc, char *argv[]) {
