@@ -9,9 +9,6 @@
 #define ROOM_NAME "Room Name: "
 #define ROOM_DESC "Room Description: "
 
-/*
- * takes a ROOM pointer and creates a shallow copy
-**/
 ROOM *roomCreate(ROOM *room) {
 	ROOM *newRoom = malloc(sizeof(ROOM));
 	if (room) {
