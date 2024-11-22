@@ -12,6 +12,9 @@ ROOM *createDungeon(LIST *roomList, int *width, int *height);
 
 #ifndef DUNGEON_DFT
 #define DUNGEON_DFT
+/*
+ * iterates through each room of a dungeon and calls `fn` on it
+**/
 void dungeonDFT(ROOM *dungeon, void (*fn)(ROOM*));
 #endif
 

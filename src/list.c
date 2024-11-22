@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 LIST listCreate() {
+	// return an empty list
 	LIST list = { malloc(sizeof(void*) * DEFAULT_LIST_SIZE), DEFAULT_LIST_SIZE, 0 };
 	return list;
 }
@@ -31,12 +32,15 @@ void listAppendItem(LIST *list, void *item) {
 }
 
 void *listPop(LIST *list, int i) {
+	// if the index is invalid, panic
 	if (i < 0 || i >= list->size) {
 		printf("index %i out of range in list with %i elements.\n", i, list->size);
 		return NULL;
 	}
+	// declare the returned item
 	void *item = NULL;
 
+	// sift that item to the end of the list
 	// this could be faster with a circular array or by using a set instead of a list,
 	// but i really dont mind this temporarily
 	for (int j = i + 1; j < list->size; j++) {
@@ -45,12 +49,14 @@ void *listPop(LIST *list, int i) {
 		*(list->array + j - 1) = temp;
 	}
 
+	// return item and set the reference to it in the list to NULL
 	item = *(list->array + --list->size);
 	*(list->array + list->size) = NULL;
 	return item;
 }
 
 int listIncludesItem(LIST *list, const void *room) {
+	// checks every element in the list against the provided element, and return true if a match is found
 	for (int i = 0; i < list->size; i++)
 		if (*(list->array + i) == room)
 			return 1;
@@ -62,7 +68,10 @@ void *listGetElement(LIST *list, int i) {
 }
 
 void listClear(LIST *list) {
+	// free the array
 	free(list->array);
+
+	// and update all vars that might make accessing it possible
 	list->array = NULL;
 	list->maxSize = 0;
 	list->size = 0;

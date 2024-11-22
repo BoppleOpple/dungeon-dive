@@ -11,6 +11,7 @@
 
 ROOM *roomCreate(ROOM *room) {
 	ROOM *newRoom = malloc(sizeof(ROOM));
+	// create a shallow copy or an empty room, deppending on the existance of `room`
 	if (room) {
 		newRoom->roomCode = room->roomCode;
 		newRoom->name = room->name;

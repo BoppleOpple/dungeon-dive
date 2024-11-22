@@ -8,6 +8,7 @@ char *str_cut(char *str, int start, int end) {
 	// including the end + 1 for termination)
 	char *cut = malloc(sizeof(char) * (end - start + 2));
 
+	// use memcpy instead of strcpy to specify length
 	memcpy(cut, str + start, sizeof(char) * (end - start + 1));
 	*(cut + end - start + 1) = 0;
 
